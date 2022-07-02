@@ -281,3 +281,16 @@ type WriterAtCloser interface {
 	io.WriterAt
 	io.Closer
 }
+
+//add struct for batchcopy
+type BatchCopyItem struct {
+	FsPath string
+	FsInst Fs
+}
+
+type BatchCopyPair struct {
+	FsSrc BatchCopyItem
+	FsDst BatchCopyItem
+}
+
+type BatchCopyPairs []*BatchCopyPair

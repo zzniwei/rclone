@@ -135,6 +135,9 @@ type ConfigInfo struct {
 	KvLockTime             time.Duration // maximum time to keep key-value database locked by process
 	DisableHTTPKeepAlives  bool
 	Metadata               bool
+
+	//add global config flags for BatchCopy
+	BatchCopyLimit int64
 }
 
 // NewConfig creates a new config with everything set to the default
@@ -194,6 +197,9 @@ func NewConfig() *ConfigInfo {
 	if found && envValue == "DEBUG" {
 		c.LogLevel = LogLevelDebug
 	}
+
+	//add batchcopy limit for batchcopy
+	c.BatchCopyLimit = 5000
 
 	return c
 }

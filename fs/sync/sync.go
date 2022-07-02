@@ -1156,3 +1156,38 @@ func MoveDir(ctx context.Context, fdst, fsrc fs.Fs, deleteEmptySrcDirs bool, cop
 	// Otherwise move the files one by one
 	return moveDir(ctx, fdst, fsrc, deleteEmptySrcDirs, copyEmptySrcDirs)
 }
+
+// add BatchCopy for copy dir from edited file list
+func BatchCopy(ctx context.Context, batchCopyPairs fs.BatchCopyPairs, copyEmptySrcDirs bool) fs.BatchCopyPairs {
+
+	iLimit := fs.GetConfig(ctx).BatchCopyLimit
+	iLen := len(batchCopyPairs)
+
+	if iLen > int(iLimit) {
+		fs.Infof(iLimit, "beyond job limit, cut off jobs ranges")
+		tempPairs := batchCopyPairs[:iLimit]
+
+		for _, pair := range tempPairs {
+			srcfs := pair.FsSrc.FsInst
+			dstfs := pair.FsDst.FsInst
+			err := CopyDir(ctx, dstfs, srcfs, copyEmptySrcDirs)
+			if err != nil {
+				fs.Errorf(err, "loop copy dir failed one time!")
+			}
+		}
+
+		return batchCopyPairs[iLimit:]
+
+	} else {
+		for _, pair := range batchCopyPairs {
+			srcfs := pair.FsSrc.FsInst
+			dstfs := pair.FsDst.FsInst
+			err := CopyDir(ctx, dstfs, srcfs, copyEmptySrcDirs)
+			if err != nil {
+				fs.Errorf(err, "loop copy dir failed one time!")
+			}
+		}
+	}
+
+	return nil
+}

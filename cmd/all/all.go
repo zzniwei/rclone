@@ -2,6 +2,7 @@
 package all
 
 import (
+	_ "github.com/rclone/rclone/cmd/batchcopy"
 	// Active commands
 	_ "github.com/rclone/rclone/cmd"
 	_ "github.com/rclone/rclone/cmd/about"
